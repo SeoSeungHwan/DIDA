@@ -1,17 +1,18 @@
 package com.dida.android.presentation.base
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.Point
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.DialogFragment
 import com.dida.android.util.LoadingDialog
 
-abstract class BaseFragment<T : ViewDataBinding, R : BaseViewModel>(layoutId: Int) : Fragment(layoutId) {
+abstract class BaseDialog<T : ViewDataBinding, R : BaseViewModel>(layoutId: Int) : DialogFragment(layoutId) {
 
     private var _binding: T? = null
     val binding get()= requireNotNull(_binding)
@@ -58,7 +59,9 @@ abstract class BaseFragment<T : ViewDataBinding, R : BaseViewModel>(layoutId: In
         savedInstanceState: Bundle?
     ): View? {
         _binding = DataBindingUtil.inflate(inflater, layoutResourceId, container, false)
-        return binding.root
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -68,10 +71,23 @@ abstract class BaseFragment<T : ViewDataBinding, R : BaseViewModel>(layoutId: In
         initAfterBinding()
     }
 
+    override fun onResume() {
+        super.onResume()
+        val windowManager = context?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val display = windowManager.defaultDisplay
+        val size = Point()
+        display.getSize(size)
+        val params: ViewGroup.LayoutParams? = dialog?.window?.attributes
+        val deviceWidth = size.x
+        params?.width = (deviceWidth * 0.8).toInt()
+        dialog?.window?.attributes = params as WindowManager.LayoutParams
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
 
     // 로딩 다이얼로그, 즉 로딩창을 띄워줌.
     // 네트워크가 시작될 때 사용자가 무작정 기다리게 하지 않기 위해 작성.
@@ -86,4 +102,3 @@ abstract class BaseFragment<T : ViewDataBinding, R : BaseViewModel>(layoutId: In
         }
     }
 }
-
