@@ -1,14 +1,22 @@
 package com.dida.android.presentation.views
 
-import android.os.Bundle
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.os.Looper
+import android.util.Log
+import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import com.dida.android.GlobalApplication.Companion.editor
 import com.dida.android.R
 import com.dida.android.databinding.FragmentSplashBinding
 import com.dida.android.presentation.base.BaseFragment
 import com.dida.android.presentation.viewmodel.SplashViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.logging.Handler
 
 @AndroidEntryPoint
 class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(R.layout.fragment_splash) {
@@ -16,15 +24,13 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>(R.la
     override val layoutResourceId: Int
         get() = R.layout.fragment_splash // get() : 커스텀 접근자, 코틀린 문법
 
+//    override val viewModel: SplashViewModel by viewModel()
     override val viewModel : SplashViewModel by viewModels()
     lateinit var navController: NavController
     var jwt: String? = null
 
     override fun initStartView() {
         navController = Navigation.findNavController(requireView())
-        viewModel.checkVersion()
-//        val dialog = PasswordBottomSheetDialog()
-//        dialog.show(childFragmentManager, "SplashFragment")
     }
 
     override fun initDataBinding() {
